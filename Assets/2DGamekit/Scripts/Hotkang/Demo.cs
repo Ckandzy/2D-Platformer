@@ -7,18 +7,24 @@ namespace Gamekit2D
 {
     public class Demo : MonoBehaviour
     {
-        private void Start()
-        {
-            
-        }
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            Debug.Log("On Collidision Endter");
-        }
+        [SerializeField]
+        public GunBase gun;
+        //private void OnCollisionEnter2D(Collision2D collision)
+        //{
+        //    if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
+        //    {
+        //        collision.gameObject.GetComponent<PlayerCharacter>().InventoryController.Gun = gun;
+        //        Debug.Log("yeal");
+        //    }
+        //}
 
-        private void OnCollisionStay2D(Collision2D collision)
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            Debug.Log("On Collidision Stay");
+            if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
+            {
+                collision.gameObject.GetComponent<PlayerCharacter>().InventoryController.AddGun(gun);
+                Debug.Log("yeal");
+            }
         }
     }
 }

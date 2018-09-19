@@ -48,6 +48,7 @@ namespace Gamekit2D
 
         HashSet<string> m_InventoryItems = new HashSet<string>();
 
+        public GunBase Gun;
 
         //Debug function useful in editor during play mode to print in console all objects in that InventoyController
         [ContextMenu("Dump")]
@@ -79,6 +80,12 @@ namespace Gamekit2D
             }
         }
 
+        public void AddGun(GunBase gun)
+        {
+            Gun = gun;
+            Gun.OnPickup();
+        }
+       
         public void RemoveItem(string key)
         {
             if (m_InventoryItems.Contains(key))

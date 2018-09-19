@@ -13,7 +13,7 @@ namespace Gamekit2D
         static protected PlayerCharacter s_PlayerInstance;
         static public PlayerCharacter PlayerInstance { get { return s_PlayerInstance; } }
 
-        public InventoryController inventoryController
+        public InventoryController InventoryController
         {
             get { return m_InventoryController; }
         }
@@ -81,7 +81,7 @@ namespace Gamekit2D
 
         public bool spriteOriginallyFacesLeft;
 
-        protected CharacterController2D m_CharacterController2D;
+        /*protected*/public CharacterController2D m_CharacterController2D;
         protected Animator m_Animator;
         protected CapsuleCollider2D m_Capsule;
         protected Transform m_Transform;
@@ -97,7 +97,7 @@ namespace Gamekit2D
         /// </summary>
         protected WaitForSeconds m_FlickeringWait;
         protected Coroutine m_FlickerCoroutine;
-        protected Transform m_CurrentBulletSpawnPoint;
+        /*protected*/public Transform m_CurrentBulletSpawnPoint;
         /// <summary>
         /// 射击间隔时间
         /// </summary>
@@ -708,13 +708,17 @@ namespace Gamekit2D
         {
             if (PlayerInput.Instance.RangedAttack.Held && m_Animator.GetBool(m_HashHoldingGunPara))
             {
-                if (m_ShootingCoroutine == null)
-                    m_ShootingCoroutine = StartCoroutine(Shoot());
+                //if (m_ShootingCoroutine == null)
+                //    m_ShootingCoroutine = StartCoroutine(Shoot());
+                if (InventoryController.Gun != null && m_ShootingCoroutine == null)
+                    m_ShootingCoroutine = StartCoroutine(InventoryController.Gun.Shoot());
             }
 
             if ((PlayerInput.Instance.RangedAttack.Up || !m_Animator.GetBool(m_HashHoldingGunPara)) && m_ShootingCoroutine != null)
             {
-                StopCoroutine(m_ShootingCoroutine);
+                //StopCoroutine(m_ShootingCoroutine);
+                //m_ShootingCoroutine = null;
+                StopCoroutine(InventoryController.Gun.Shoot());
                 m_ShootingCoroutine = null;
             }
         }
