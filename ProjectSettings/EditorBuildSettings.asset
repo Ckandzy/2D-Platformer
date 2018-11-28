@@ -30,9 +30,15 @@ EditorBuildSettings:
     path: Assets/2DGamekit/Scenes/UI/Loading.unity
     guid: ebc4647ff02971c4ba1b207af066be4d
   - enabled: 0
-    path: Assets/Test.unity
+    path: 
     guid: af5560c898945e74ab1d756894a77136
   - enabled: 1
-    path: Assets/Start.unity
+    path: Assets/Scenes/Start.unity
     guid: a61d2670b26de4949a8eaedb0a439ff5
+  - enabled: 1
+    path: 
+    guid: fe5fac283e3ed944b8fae242b921860f
+  - enabled: 1
+    path: Assets/Dungeon/Scenes/Dungeon.unity
+    guid: 64255560368cf704cba76cd58014616e
   m_configObjects: {}

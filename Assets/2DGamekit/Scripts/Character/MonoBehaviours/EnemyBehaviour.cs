@@ -159,7 +159,7 @@ namespace Gamekit2D
             m_CharacterController2D.CheckCapsuleEndCollisions();
 
             UpdateTimers();
-
+            
             m_Animator.SetBool(m_HashGroundedPara, m_CharacterController2D.IsGrounded);
         }
 

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d746e0082aaaaf0458b2b02bb4d45a47, type: 3}
+  m_Name: Torch
+  m_EditorClassIdentifier: 
+  m_DefaultSprite: {fileID: 21300000, guid: d503e745772590f4994685f2cb02a188, type: 3}
+  m_DefaultColliderType: 0
+  m_TilingRules:
+  - m_Neighbors: 0000000000000000000000000000000000000000000000000000000000000000
+    m_Sprites:
+    - {fileID: 21300000, guid: d503e745772590f4994685f2cb02a188, type: 3}
+    - {fileID: 21300000, guid: 2445479f79969a243a426f87a3683399, type: 3}
+    - {fileID: 21300000, guid: 95399847c00124149ae7c18155acfd29, type: 3}
+    - {fileID: 21300000, guid: 8ab4aee0dd5e81d4faaebce19de397cd, type: 3}
+    - {fileID: 21300000, guid: 2b8dadfe2de3514408b245b87a360227, type: 3}
+    - {fileID: 21300000, guid: 8e4f6369a2d190f4bb49ab8c6211c55a, type: 3}
+    - {fileID: 21300000, guid: 4ae605414f4c8574b8aff2a1b9d0e3e7, type: 3}
+    m_AnimationSpeed: 15
+    m_PerlinScale: 0.5
+    m_AutoTransform: 0
+    m_Output: 2
+    m_ColliderType: 0

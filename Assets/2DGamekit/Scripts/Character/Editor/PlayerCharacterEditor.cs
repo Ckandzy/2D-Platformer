@@ -26,14 +26,14 @@ namespace Gamekit2D
         SerializedProperty m_GravityProp;
         SerializedProperty m_JumpSpeedProp;
         SerializedProperty m_JumpAbortSpeedReductionProp;
-    
+
         SerializedProperty m_HurtJumpAngleProp;
         SerializedProperty m_HurtJumpSpeedProp;
         SerializedProperty m_FlickeringDurationProp;
-    
+
         SerializedProperty m_MeleeAttackDashSpeedProp;
         SerializedProperty m_DashWhileAirborneProp;
-    
+
         SerializedProperty m_ShotsPerSecondProp;
         SerializedProperty m_BulletSpeedProp;
         SerializedProperty m_HoldingGunTimeoutDurationProp;
@@ -120,20 +120,20 @@ namespace Gamekit2D
         readonly GUIContent m_CameraFollowSettingsContent = new GUIContent("Camera Follow Settings");
         readonly GUIContent m_MiscSettingsContent = new GUIContent("Misc Settings");
 
-        void OnEnable ()
+        void OnEnable()
         {
             m_SpriteRendererProp = serializedObject.FindProperty("spriteRenderer");
             m_DamageableProp = serializedObject.FindProperty("damageable");
             m_MeleeDamagerProp = serializedObject.FindProperty("meleeDamager");
             m_FacingLeftBulletSpawnPointProp = serializedObject.FindProperty("facingLeftBulletSpawnPoint");
-            m_FacingRightBulletSpawnPointProp = serializedObject.FindProperty ("facingRightBulletSpawnPoint");
+            m_FacingRightBulletSpawnPointProp = serializedObject.FindProperty("facingRightBulletSpawnPoint");
             m_BulletPoolProp = serializedObject.FindProperty("bulletPool");
-            m_CameraFollowTargetProp = serializedObject.FindProperty ("cameraFollowTarget");
+            m_CameraFollowTargetProp = serializedObject.FindProperty("cameraFollowTarget");
 
             m_MaxSpeedProp = serializedObject.FindProperty("maxSpeed");
             m_GroundAccelerationProp = serializedObject.FindProperty("groundAcceleration");
             m_GroundDecelerationProp = serializedObject.FindProperty("groundDeceleration");
-            m_PushingSpeedProportionProp = serializedObject.FindProperty ("pushingSpeedProportion");
+            m_PushingSpeedProportionProp = serializedObject.FindProperty("pushingSpeedProportion");
 
             m_AirborneAccelProportionProp = serializedObject.FindProperty("airborneAccelProportion");
             m_AirborneDecelProportionProp = serializedObject.FindProperty("airborneDecelProportion");
@@ -143,15 +143,15 @@ namespace Gamekit2D
 
             m_HurtJumpAngleProp = serializedObject.FindProperty("hurtJumpAngle");
             m_HurtJumpSpeedProp = serializedObject.FindProperty("hurtJumpSpeed");
-            m_FlickeringDurationProp = serializedObject.FindProperty ("flickeringDuration");
+            m_FlickeringDurationProp = serializedObject.FindProperty("flickeringDuration");
 
             m_MeleeAttackDashSpeedProp = serializedObject.FindProperty("meleeAttackDashSpeed");
-            m_DashWhileAirborneProp = serializedObject.FindProperty ("dashWhileAirborne");
+            m_DashWhileAirborneProp = serializedObject.FindProperty("dashWhileAirborne");
 
             m_ShotsPerSecondProp = serializedObject.FindProperty("shotsPerSecond");
             m_BulletSpeedProp = serializedObject.FindProperty("bulletSpeed");
             m_HoldingGunTimeoutDurationProp = serializedObject.FindProperty("holdingGunTimeoutDuration");
-            m_RightBulletSpawnPointAnimatedProp = serializedObject.FindProperty ("rightBulletSpawnPointAnimated");
+            m_RightBulletSpawnPointAnimatedProp = serializedObject.FindProperty("rightBulletSpawnPointAnimated");
 
             m_FootstepAudioPlayerProp = serializedObject.FindProperty("footstepAudioPlayer");
             m_LandingAudioPlayerProp = serializedObject.FindProperty("landingAudioPlayer");
@@ -166,31 +166,31 @@ namespace Gamekit2D
             m_MaxVerticalDeltaDampTimeProp = serializedObject.FindProperty("maxVerticalDeltaDampTime");
             m_VerticalCameraOffsetDelayProp = serializedObject.FindProperty("verticalCameraOffsetDelay");
 
-            m_SpriteOriginallyFacesLeftProp = serializedObject.FindProperty ("spriteOriginallyFacesLeft");
+            m_SpriteOriginallyFacesLeftProp = serializedObject.FindProperty("spriteOriginallyFacesLeft");
         }
 
-        public override void OnInspectorGUI ()
+        public override void OnInspectorGUI()
         {
-            serializedObject.Update ();
+            serializedObject.Update();
 
-            EditorGUILayout.BeginVertical (GUI.skin.box);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUI.indentLevel++;
 
-            m_ReferencesFoldout = EditorGUILayout.Foldout (m_ReferencesFoldout, m_ReferencesContent);
+            m_ReferencesFoldout = EditorGUILayout.Foldout(m_ReferencesFoldout, m_ReferencesContent);
 
             if (m_ReferencesFoldout)
             {
-                EditorGUILayout.PropertyField (m_SpriteRendererProp, m_SpriteRendererContent);
-                EditorGUILayout.PropertyField (m_DamageableProp, m_DamageableContent);
-                EditorGUILayout.PropertyField (m_MeleeDamagerProp, m_MeleeDamagerContent);
-                EditorGUILayout.PropertyField (m_FacingLeftBulletSpawnPointProp, m_FacingLeftBulletSpawnPointContent);
-                EditorGUILayout.PropertyField (m_FacingRightBulletSpawnPointProp, m_FacingRightBulletSpawnPointContent);
-                EditorGUILayout.PropertyField (m_BulletPoolProp, m_BulletPoolContent);
-                EditorGUILayout.PropertyField (m_CameraFollowTargetProp, m_CameraFollowTargetContent);
+                EditorGUILayout.PropertyField(m_SpriteRendererProp, m_SpriteRendererContent);
+                EditorGUILayout.PropertyField(m_DamageableProp, m_DamageableContent);
+                EditorGUILayout.PropertyField(m_MeleeDamagerProp, m_MeleeDamagerContent);
+                EditorGUILayout.PropertyField(m_FacingLeftBulletSpawnPointProp, m_FacingLeftBulletSpawnPointContent);
+                EditorGUILayout.PropertyField(m_FacingRightBulletSpawnPointProp, m_FacingRightBulletSpawnPointContent);
+                EditorGUILayout.PropertyField(m_BulletPoolProp, m_BulletPoolContent);
+                EditorGUILayout.PropertyField(m_CameraFollowTargetProp, m_CameraFollowTargetContent);
             }
 
             EditorGUI.indentLevel--;
-            EditorGUILayout.EndVertical ();
+            EditorGUILayout.EndVertical();
 
             EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUI.indentLevel++;
@@ -202,7 +202,7 @@ namespace Gamekit2D
                 EditorGUILayout.PropertyField(m_MaxSpeedProp, m_MaxSpeedContent);
                 EditorGUILayout.PropertyField(m_GroundAccelerationProp, m_GroundAccelerationContent);
                 EditorGUILayout.PropertyField(m_GroundDecelerationProp, m_GroundDecelerationContent);
-                EditorGUILayout.PropertyField (m_PushingSpeedProportionProp, m_PushingSpeedProportionContent);
+                EditorGUILayout.PropertyField(m_PushingSpeedProportionProp, m_PushingSpeedProportionContent);
             }
 
             EditorGUI.indentLevel--;
@@ -232,9 +232,9 @@ namespace Gamekit2D
 
             if (m_HurtSettingsFoldout)
             {
-                EditorGUILayout.PropertyField (m_HurtJumpAngleProp, m_HurtJumpAngleContent);
-                EditorGUILayout.PropertyField (m_HurtJumpSpeedProp, m_HurtJumpSpeedContent);
-                EditorGUILayout.PropertyField (m_FlickeringDurationProp, m_FlickeringDurationContent);
+                EditorGUILayout.PropertyField(m_HurtJumpAngleProp, m_HurtJumpAngleContent);
+                EditorGUILayout.PropertyField(m_HurtJumpSpeedProp, m_HurtJumpSpeedContent);
+                EditorGUILayout.PropertyField(m_FlickeringDurationProp, m_FlickeringDurationContent);
             }
 
             EditorGUI.indentLevel--;
@@ -294,17 +294,17 @@ namespace Gamekit2D
 
             if (m_CameraFollowSettingsFoldout)
             {
-                EditorGUILayout.PropertyField (m_CameraHorizontalFacingOffsetProp, m_CameraHorizontalFacingOffsetContent);
-                EditorGUILayout.PropertyField (m_CameraHorizontalSpeedOffsetProp, m_CameraHorizontalSpeedOffsetContent);
-                EditorGUILayout.PropertyField (m_CameraVerticalInputOffsetProp, m_CameraVerticalInputOffsetContent);
-                EditorGUILayout.PropertyField (m_MaxHorizontalDeltaDampTimeProp, m_MaxHorizontalDeltaDampTimeContent);
-                EditorGUILayout.PropertyField (m_MaxVerticalDeltaDampTimeProp, m_MaxVerticalDeltaDampTimeContent);
-                EditorGUILayout.PropertyField (m_VerticalCameraOffsetDelayProp, m_VerticalCameraOffsetDelayContent);
+                EditorGUILayout.PropertyField(m_CameraHorizontalFacingOffsetProp, m_CameraHorizontalFacingOffsetContent);
+                EditorGUILayout.PropertyField(m_CameraHorizontalSpeedOffsetProp, m_CameraHorizontalSpeedOffsetContent);
+                EditorGUILayout.PropertyField(m_CameraVerticalInputOffsetProp, m_CameraVerticalInputOffsetContent);
+                EditorGUILayout.PropertyField(m_MaxHorizontalDeltaDampTimeProp, m_MaxHorizontalDeltaDampTimeContent);
+                EditorGUILayout.PropertyField(m_MaxVerticalDeltaDampTimeProp, m_MaxVerticalDeltaDampTimeContent);
+                EditorGUILayout.PropertyField(m_VerticalCameraOffsetDelayProp, m_VerticalCameraOffsetDelayContent);
             }
 
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
-        
+
             EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUI.indentLevel++;
 
@@ -318,7 +318,7 @@ namespace Gamekit2D
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
 
-            serializedObject.ApplyModifiedProperties ();
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

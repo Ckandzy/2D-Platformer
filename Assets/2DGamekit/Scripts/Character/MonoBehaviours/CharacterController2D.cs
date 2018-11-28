@@ -86,8 +86,9 @@ namespace Gamekit2D
         }
 
         /// <summary>
-        /// This updates the state of IsGrounded.  It is called automatically in FixedUpdate but can be called more frequently if higher accurracy is required.
+        /// This updates the state of IsGrounded.  It is called automatically in FixedUpdate but can be called more frequently if higher accuracy(精度) is required.
         /// </summary>
+        /// <param name="bottom">检测方向(天花板或者地板)</param>
         public void CheckCapsuleEndCollisions(bool bottom = true)
         {
             Vector2 raycastDirection;
@@ -96,8 +97,6 @@ namespace Gamekit2D
 
             if (m_Capsule == null)
             {
-                //Debug.Log("m_Capsule is null");
-
                 raycastStart = m_Rigidbody2D.position + Vector2.up;
                 raycastDistance = 1f + groundedRaycastDistance;
 
@@ -148,7 +147,7 @@ namespace Gamekit2D
             for (int i = 0; i < m_RaycastPositions.Length; i++)
             {
                 int count = Physics2D.Raycast(m_RaycastPositions[i], raycastDirection, m_ContactFilter, m_HitBuffer, raycastDistance);
-
+                Debug.DrawRay(m_RaycastPositions[i], raycastDirection);
                 if (bottom)
                 {
                     m_FoundHits[i] = count > 0 ? m_HitBuffer[0] : new RaycastHit2D();
@@ -189,7 +188,6 @@ namespace Gamekit2D
                 {
                     groundNormal.Normalize();
                 }
-
                 //relative相对的
                 Vector2 relativeVelocity = Velocity;
                 for (int i = 0; i < m_GroundColliders.Length; i++)
@@ -206,6 +204,7 @@ namespace Gamekit2D
                     }
                 }
 
+                //Debug.Log((Mathf.Approximately(groundNormal.x, 0f) && Mathf.Approximately(groundNormal.y, 0f)));
                 if (Mathf.Approximately(groundNormal.x, 0f) && Mathf.Approximately(groundNormal.y, 0f))
                 {
                     IsGrounded = false;

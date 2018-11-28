@@ -502,7 +502,6 @@ namespace Gamekit2D
             }
             else
                 m_CurrentSurface = null;
-
             m_Animator.SetBool(m_HashGroundedPara, grounded);
 
             return grounded;
