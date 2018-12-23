@@ -88,7 +88,6 @@ namespace Gamekit2D
 
             Vector2 facingOffset = Vector2.Scale(offset, scale);
             if (offsetBasedOnSpriteFacing && spriteRenderer != null && spriteRenderer.flipX != m_SpriteOriginallyFlipped)
-                //2018.7.24 Hotkang 这里再乘scale可能多余，因为之前已经Vector2.Scale(offset, scale);
                 facingOffset = new Vector2(-offset.x * scale.x, offset.y * scale.y);
 
             Vector2 scaledSize = Vector2.Scale(size, scale);

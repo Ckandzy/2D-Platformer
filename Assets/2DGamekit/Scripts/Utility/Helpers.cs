@@ -8,7 +8,7 @@ namespace Gamekit2D
 {
     public static class Vector2Extension
     {
-
+        //http://zhaoxuhui.top/blog/2018/03/13/RelationBetweenQ4&R&Euler.html
         public static Vector2 Rotate(this Vector2 v, float degrees)
         {
             float sin = Mathf.Sin(degrees * Mathf.Deg2Rad);

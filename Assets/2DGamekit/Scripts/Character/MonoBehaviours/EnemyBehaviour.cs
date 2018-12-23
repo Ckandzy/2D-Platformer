@@ -7,6 +7,16 @@ using UnityEditor;
 
 namespace Gamekit2D
 {
+    public enum LaunchMode
+    {
+        Parabola = 0,
+        Beeline,
+    }
+    public enum SightType
+    {
+        Rectangle = 0,
+        Cone,
+    }
     [RequireComponent(typeof(CharacterController2D))]
     [RequireComponent(typeof(Collider2D))]
     public class EnemyBehaviour : MonoBehaviour
@@ -28,6 +38,11 @@ namespace Gamekit2D
         public Bullet projectilePrefab;
 
         [Header("Scanning settings")]
+        public SightType sightType = SightType.Cone;
+        [Tooltip("视野矩形偏移量")]
+        public Vector2 offset = new Vector2(1.5f, 1f);
+        [Tooltip("视野矩形大小")]
+        public Vector2 size = new Vector2(2.5f, 1f);
         [Tooltip("The angle of the forward of the view cone. 0 is forward of the sprite, 90 is up, 180 behind etc.")]
         [Range(0.0f,360.0f)]
         public float viewDirection = 0.0f;
@@ -50,6 +65,8 @@ namespace Gamekit2D
         [Header("Range Attack Data")]
         [Tooltip("From where the projectile are spawned")]
         public Transform shootingOrigin;
+        public LaunchMode launchMode = LaunchMode.Beeline;
+        public float launchSpeed = 20f;
         public float shootAngle = 45.0f;
         public float shootForce = 100.0f;
         public float fireRate = 2.0f;
@@ -77,7 +94,7 @@ namespace Gamekit2D
         protected float m_FireTimer = 0.0f;
 
         //as we flip the sprite instead of rotating/scaling the object, this give the forward vector according to the sprite orientation
-        protected Vector2 m_SpriteForward;
+        /*protected*/public Vector2 m_SpriteForward;
         protected Bounds m_LocalBounds;
         protected Vector3 m_LocalDamagerPosition;
 
@@ -137,7 +154,6 @@ namespace Gamekit2D
             {
                 m_LocalBounds.Encapsulate(transform.InverseTransformBounds(s_ColliderCache[i].bounds));
             }
-
             m_Filter = new ContactFilter2D();
             m_Filter.layerMask = m_CharacterController2D.groundedLayerMask;
             m_Filter.useLayerMask = true;
@@ -152,7 +168,7 @@ namespace Gamekit2D
             if (m_Dead)
                 return;
 
-            m_MoveVector.y = Mathf.Max(m_MoveVector.y - gravity * Time.deltaTime, - gravity);
+            m_MoveVector.y = Mathf.Max(m_MoveVector.y - gravity * Time.deltaTime, -gravity);
 
             m_CharacterController2D.Move(m_MoveVector * Time.deltaTime);
 
@@ -179,7 +195,7 @@ namespace Gamekit2D
 
         public bool CheckForObstacle(float forwardDistance)
         {
-            //we circle cast with a size sligly small than the collider height. That avoid to collide with very small bump on the ground
+            //we circle cast with a size slightly small than the collider height. That avoid to collide with very small bump on the ground
             if (Physics2D.CircleCast(m_Collider.bounds.center, m_Collider.bounds.extents.y - 0.2f, m_SpriteForward, forwardDistance, m_Filter.layerMask.value))
             {
                 return true;
@@ -201,12 +217,12 @@ namespace Gamekit2D
             if (facing == -1)
             {
                 m_SpriteRenderer.flipX = !spriteFaceLeft;
-                m_SpriteForward = spriteFaceLeft ? Vector2.right : Vector2.left;
+                m_SpriteForward = Vector2.left;
             }
             else if (facing == 1)
             {
                 m_SpriteRenderer.flipX = spriteFaceLeft;
-                m_SpriteForward = spriteFaceLeft ? Vector2.left : Vector2.right;
+                m_SpriteForward = Vector2.right;
             }
         }
 
@@ -265,6 +281,7 @@ namespace Gamekit2D
 
             Vector3 toTarget = m_Target.position - transform.position;
 
+            //Debug.Log(toTarget + " , " + m_SpriteForward + " , " + Vector2.Dot(toTarget, m_SpriteForward));
             if (Vector2.Dot(toTarget, m_SpriteForward) < 0)
             {
                 SetFacingData(Mathf.RoundToInt(-m_SpriteForward.x));
@@ -280,6 +297,7 @@ namespace Gamekit2D
 
             if (toTarget.sqrMagnitude < viewDistance * viewDistance)
             {
+                //注：假设viewDirection为0时, -viewDirection和viewDirection仍然有效, 在计算机有符号整数和浮点数中, +0和-0是两种不同的表示。
                 Vector3 testForward = Quaternion.Euler(0, 0, spriteFaceLeft ? -viewDirection : viewDirection) * m_SpriteForward;
                 if (m_SpriteRenderer.flipX) testForward.x = -testForward.x;
 
@@ -330,7 +348,9 @@ namespace Gamekit2D
             }
         }
 
-        //This is called when the damager get enabled (so the enemy can damage the player). Likely be called by the animation throught animation event (see the attack animation of the Chomper)
+
+        //This is called when the damager get enabled (so the enemy can damage the player). 
+        //Likely be called by the animation throught animation event (see the attack animation of the Chomper)
         public void StartAttack()
         {
             if (m_SpriteRenderer.flipX)
@@ -375,18 +395,16 @@ namespace Gamekit2D
 
         public void Shooting()
         {
-            Vector2 force = m_SpriteForward.x > 0 ? Vector2.right.Rotate(shootAngle) : Vector2.left.Rotate(-shootAngle);
+            //Vector2 force = m_SpriteForward.x > 0 ? Vector2.right.Rotate(shootAngle) : Vector2.left.Rotate(-shootAngle);
 
-            force *= shootForce;
-
+            //force *= shootForce;
             Vector2 shootPosition = shootingOrigin.transform.localPosition;
 
             //if we are flipped compared to normal, we need to localy flip the shootposition too
             if ((spriteFaceLeft && m_SpriteForward.x > 0) || (!spriteFaceLeft && m_SpriteForward.x > 0))
                 shootPosition.x *= -1;
 
-            BulletObject obj = m_BulletPool.Pop(shootingOrigin.TransformPoint(shootPosition));
-
+            BulletObject obj = m_BulletPool.Pop(transform.TransformPoint(shootPosition));
             shootingAudio.PlayRandomSound();
 
             obj.rigidbody2D.velocity = (GetProjectilVelocity(m_TargetShootPosition, shootingOrigin.transform.position));
@@ -395,78 +413,91 @@ namespace Gamekit2D
         //This will give the velocity vector needed to give to the bullet rigidbody so it reach the given target from the origin.
         private Vector3 GetProjectilVelocity(Vector3 target, Vector3 origin)
         {
-            const float projectileSpeed = 30.0f;
+            float projectileSpeed = launchSpeed;
 
             Vector3 velocity = Vector3.zero;
             Vector3 toTarget = target - origin;
 
-            float gSquared = Physics.gravity.sqrMagnitude;
-            float b = projectileSpeed * projectileSpeed + Vector3.Dot(toTarget, Physics.gravity);
-            float discriminant = b * b - gSquared * toTarget.sqrMagnitude;
-
-            // Check whether the target is reachable at max speed or less.
-            if (discriminant < 0)
+            switch (launchMode)
             {
-                velocity = toTarget;
-                velocity.y = 0;
-                velocity.Normalize();
-                velocity.y = 0.7f;
+                case LaunchMode.Beeline:
+                    {
+                        velocity = new Vector3(Mathf.Sign(toTarget.x), 0, 0) * projectileSpeed;
+                    }
+                    break;
+                case LaunchMode.Parabola:
+                    {
+                        float gSquared = Physics.gravity.sqrMagnitude;
+                        float b = projectileSpeed * projectileSpeed + Vector3.Dot(toTarget, Physics.gravity);
+                        float discriminant = b * b - gSquared * toTarget.sqrMagnitude;
+                        // Check whether the target is reachable at max speed or less.
+                        if (discriminant < 0)
+                        {
+                            velocity = toTarget;
+                            Debug.Log(toTarget);
+                            velocity.y = 0;
+                            velocity.Normalize();
+                            velocity.y = 0.7f;
 
-                velocity *= projectileSpeed;
-                return velocity;
+                            velocity *= projectileSpeed;
+                            return velocity;
+                        }
+
+                        float discRoot = Mathf.Sqrt(discriminant);
+
+                        // Highest
+                        float T_max = Mathf.Sqrt((b + discRoot) * 2f / gSquared);
+
+                        // Lowest speed arc
+                        float T_lowEnergy = Mathf.Sqrt(Mathf.Sqrt(toTarget.sqrMagnitude * 4f / gSquared));
+
+                        // Most direct with max speed
+                        float T_min = Mathf.Sqrt((b - discRoot) * 2f / gSquared);
+
+                        float T = 0;
+
+                        // 0 = highest, 1 = lowest, 2 = most direct
+                        int shotType = 1;
+
+                        switch (shotType)
+                        {
+                            case 0:
+                                T = T_max;
+                                break;
+                            case 1:
+                                T = T_lowEnergy;
+                                break;
+                            case 2:
+                                T = T_min;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        velocity = toTarget / T - Physics.gravity * T / 2f;
+                    }
+                    break;
             }
-
-            float discRoot = Mathf.Sqrt(discriminant);
-
-            // Highest
-            float T_max = Mathf.Sqrt((b + discRoot) * 2f / gSquared);
-
-            // Lowest speed arc
-            float T_lowEnergy = Mathf.Sqrt(Mathf.Sqrt(toTarget.sqrMagnitude * 4f / gSquared));
-
-            // Most direct with max speed
-            float T_min = Mathf.Sqrt((b - discRoot) * 2f / gSquared);
-
-            float T = 0;
-
-            // 0 = highest, 1 = lowest, 2 = most direct
-            int shotType = 1;
-
-            switch (shotType)
-            {
-                case 0:
-                    T = T_max;
-                    break;
-                case 1:
-                    T = T_lowEnergy;
-                    break;
-                case 2:
-                    T = T_min;
-                    break;
-                default:
-                    break;
-            }
-
-            velocity = toTarget / T - Physics.gravity * T / 2f;
 
             return velocity;
         }
 
         public void Die(Damager damager, Damageable damageable)
         {
-            Vector2 throwVector = new Vector2(0, 2.0f);
-            Vector2 damagerToThis = damager.transform.position - transform.position;
+            //Vector2 throwVector = new Vector2(0, 2.0f);
+            //Vector2 damagerToThis = damager.transform.position - transform.position;
         
-            throwVector.x = Mathf.Sign(damagerToThis.x) * -4.0f;
-            SetMoveVector(throwVector);
+            //throwVector.x = Mathf.Sign(damagerToThis.x) * -4.0f;
+            //SetMoveVector(throwVector);
 
             m_Animator.SetTrigger(m_HashDeathPara);
 
             dieAudio.PlayRandomSound();
 
             m_Dead = true;
-            m_Collider.enabled = false;
-
+            Debug.Log(moveVector);
+            //m_Collider.enabled = false;
+            gameObject.layer = 20;
             CameraShaker.Shake(0.15f, 0.3f);
         }
 
@@ -477,11 +508,11 @@ namespace Gamekit2D
 
             m_Animator.SetTrigger(m_HashHitPara);
 
-            Vector2 throwVector = new Vector2(0, 3.0f);
-            Vector2 damagerToThis = damager.transform.position - transform.position;
+            //Vector2 throwVector = new Vector2(0, 3.0f);
+            //Vector2 damagerToThis = damager.transform.position - transform.position;
 
-            throwVector.x = Mathf.Sign(damagerToThis.x) * -2.0f;
-            m_MoveVector = throwVector;
+            //throwVector.x = Mathf.Sign(damagerToThis.x) * -2.0f;
+            //m_MoveVector = throwVector;
 
             if (m_FlickeringCoroutine != null)
             {
@@ -552,6 +583,19 @@ namespace Gamekit2D
             //Draw attack range
             Handles.color = new Color(1.0f, 0,0, 0.1f);
             Handles.DrawSolidDisc(transform.position, Vector3.back, meleeRange);
+
+            //Bounds bounds = new Bounds();
+            //bounds.center = offset;
+            //bounds.size = size;
+            //Vector3[] verts = new Vector3[]
+            //{
+            //    new Vector3(bounds.min.x, bounds.min.y, 0),
+            //    new Vector3(bounds.min.x, bounds.max.y, 0),
+            //    new Vector3(bounds.max.x, bounds.max.y, 0),
+            //    new Vector3(bounds.max.x, bounds.min.y, 0)
+            //};
+            Handles.color = new Color(0, 0, 1f, 0.2f);
+            Handles.DrawSolidRectangleWithOutline(new Rect(offset, size), Color.blue, Color.black);
         }
 #endif
     }

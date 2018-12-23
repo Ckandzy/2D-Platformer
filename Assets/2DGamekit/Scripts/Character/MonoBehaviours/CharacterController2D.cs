@@ -97,24 +97,50 @@ namespace Gamekit2D
 
             if (m_Capsule == null)
             {
-                raycastStart = m_Rigidbody2D.position + Vector2.up;
-                raycastDistance = 1f + groundedRaycastDistance;
-
-                if (bottom)
+                if (GetComponent<BoxCollider2D>())
                 {
-                    raycastDirection = Vector2.down;
+                    Bounds bounds = GetComponent<BoxCollider2D>().bounds;
+                    raycastStart = m_Rigidbody2D.position + Vector2.up * bounds.extents.y;
+                    raycastDistance = bounds.extents.y + groundedRaycastDistance;
 
-                    m_RaycastPositions[0] = raycastStart + Vector2.left * 0.4f;
-                    m_RaycastPositions[1] = raycastStart;
-                    m_RaycastPositions[2] = raycastStart + Vector2.right * 0.4f;
+                    if (bottom)
+                    {
+                        raycastDirection = Vector2.down;
+
+                        m_RaycastPositions[0] = raycastStart + Vector2.left * bounds.extents.x;
+                        m_RaycastPositions[1] = raycastStart;
+                        m_RaycastPositions[2] = raycastStart + Vector2.right * bounds.extents.x;
+                    }
+                    else
+                    {
+                        raycastDirection = Vector2.up;
+
+                        m_RaycastPositions[0] = raycastStart + Vector2.left * bounds.extents.x;
+                        m_RaycastPositions[1] = raycastStart;
+                        m_RaycastPositions[2] = raycastStart + Vector2.right * bounds.extents.x;
+                    }
                 }
                 else
                 {
-                    raycastDirection = Vector2.up;
+                    raycastStart = m_Rigidbody2D.position + Vector2.up;
+                    raycastDistance = 1f + groundedRaycastDistance;
 
-                    m_RaycastPositions[0] = raycastStart + Vector2.left * 0.4f;
-                    m_RaycastPositions[1] = raycastStart;
-                    m_RaycastPositions[2] = raycastStart + Vector2.right * 0.4f;
+                    if (bottom)
+                    {
+                        raycastDirection = Vector2.down;
+
+                        m_RaycastPositions[0] = raycastStart + Vector2.left * 0.3f;
+                        m_RaycastPositions[1] = raycastStart;
+                        m_RaycastPositions[2] = raycastStart + Vector2.right * 0.3f;
+                    }
+                    else
+                    {
+                        raycastDirection = Vector2.up;
+
+                        m_RaycastPositions[0] = raycastStart + Vector2.left * 0.3f;
+                        m_RaycastPositions[1] = raycastStart;
+                        m_RaycastPositions[2] = raycastStart + Vector2.right * 0.3f;
+                    }
                 }
             }
             else
@@ -147,7 +173,8 @@ namespace Gamekit2D
             for (int i = 0; i < m_RaycastPositions.Length; i++)
             {
                 int count = Physics2D.Raycast(m_RaycastPositions[i], raycastDirection, m_ContactFilter, m_HitBuffer, raycastDistance);
-                Debug.DrawRay(m_RaycastPositions[i], raycastDirection);
+                //射线可视化
+                //Debug.DrawRay(m_RaycastPositions[i], raycastDirection);
                 if (bottom)
                 {
                     m_FoundHits[i] = count > 0 ? m_HitBuffer[0] : new RaycastHit2D();
@@ -230,5 +257,10 @@ namespace Gamekit2D
                 m_HitBuffer[i] = new RaycastHit2D();
             }
         }
+
+        //public void CheckBoxEndCollisions(bool bottom = true)
+        //{
+
+        //}
     }
 }

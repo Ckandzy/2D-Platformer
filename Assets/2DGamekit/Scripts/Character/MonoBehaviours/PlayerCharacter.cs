@@ -84,10 +84,12 @@ namespace Gamekit2D
         /*protected*/public CharacterController2D m_CharacterController2D;
         protected Animator m_Animator;
         protected CapsuleCollider2D m_Capsule;
+        protected BoxCollider2D m_Box;
         protected Transform m_Transform;
         protected Vector2 m_MoveVector;
         protected List<Pushable> m_CurrentPushables = new List<Pushable>(4);
         protected Pushable m_CurrentPushable;
+        protected Climbable m_CurrentClimbable;
         /// <summary>
         /// 受伤跳跃正切值
         /// </summary>
@@ -135,10 +137,11 @@ namespace Gamekit2D
         protected readonly int m_HashForcedRespawnPara = Animator.StringToHash("ForcedRespawn");
         protected readonly int m_HashMeleeAttackPara = Animator.StringToHash("MeleeAttack");
         protected readonly int m_HashHoldingGunPara = Animator.StringToHash("HoldingGun");
+        protected readonly int m_HashClimbingPara = Animator.StringToHash("Climbing");
 
         protected const float k_MinHurtJumpAngle = 0.001f;
         protected const float k_MaxHurtJumpAngle = 89.999f;
-        protected const float k_GroundedStickingVelocityMultiplier = 3f;    // This is to help the character stick to vertically moving platforms.
+        protected const float k_GroundedStickingVelocityMultiplier = 3f;    // This is to help the character stick to(粘连在) vertically moving platforms.
 
         //used in non alloc version of physic function
         protected ContactPoint2D[] m_ContactsBuffer = new ContactPoint2D[16];
@@ -151,6 +154,7 @@ namespace Gamekit2D
             m_CharacterController2D = GetComponent<CharacterController2D>();
             m_Animator = GetComponent<Animator>();
             m_Capsule = GetComponent<CapsuleCollider2D>();
+            m_Box = GetComponent<BoxCollider2D>();
             m_Transform = transform;
             m_InventoryController = GetComponent<InventoryController>();
 
@@ -195,6 +199,11 @@ namespace Gamekit2D
             {
                 m_CurrentPushables.Add(pushable);
             }
+            Climbable climbable = other.GetComponent<Climbable>();
+            if (climbable != null)
+            {
+                m_CurrentClimbable = climbable;
+            }
         }
 
         void OnTriggerExit2D(Collider2D other)
@@ -204,6 +213,11 @@ namespace Gamekit2D
             {
                 if (m_CurrentPushables.Contains(pushable))
                     m_CurrentPushables.Remove(pushable);
+            }
+            Climbable climbable = other.GetComponent<Climbable>();
+            if (climbable != null)
+            {
+                m_CurrentClimbable = null;
             }
         }
 
@@ -524,7 +538,21 @@ namespace Gamekit2D
             }
         }
 
-        #region 推动物体
+        #region 推动对象
+        /*
+         *推动物体逻辑概要：
+         * 在状态机中所有状态类调用CheckForPushing()检测是否符合条件，如果是
+         * 设置m_CurrentPushable字段为当前推动的物体
+         * 判断可推动对象 相对角色的左右方向 及 键盘或者控制器的左右输入方向 是否要处理推动（如箱子在左，角色在右，此时输入为向右移动则不需要推动）
+         * 执行m_CharacterController2D.Teleport(moveToPosition);  
+         * 注：CheckForPushing() 只判断角色是否符合推动状态条件，并设置Pushing flag，等待状态机的切换，及保持推动过程中角色和可推动对象的相对位置恒定
+         * 不做相关移动操作，而具体的移动逻辑为：
+         * Pushing状态中调用m_MonoBehaviour.GroundedHorizontalMovement(true, m_MonoBehaviour.pushingSpeedProportion); 设置m_MoveVector（缓慢）
+         * Pushing状态中调用MovePushable()，m_CurrentPushable.Move(m_MoveVector * Time.deltaTime); ***此处是以m_MoveVector为箱子移动速度
+         */
+        /// <summary>
+        /// 判断是否处于推动状态
+        /// </summary>
         public void CheckForPushing()
         {
             bool pushableOnCorrectSide = false;
@@ -553,6 +581,9 @@ namespace Gamekit2D
                 {
                     Vector2 moveToPosition = movingRight ? m_CurrentPushable.playerPushingRightPosition.position : m_CurrentPushable.playerPushingLeftPosition.position;
                     moveToPosition.y = m_CharacterController2D.Rigidbody2D.position.y;
+                    //m_CharacterController2D.transform.position == m_CharacterController2D.Rigidbody2D.position
+                    //2018.11.28 Hotkang 注： 此处的逻辑是：保持推动时角色和推动物体的相对位置不变（由pushable组件下的left和right position确定）
+                    //如果不调用该函数，会出现碰撞抖动：角色一直向前推动，但可推动对象已经不可向前移动（碰撞体接触），此时有可能推动对象会嵌入其他碰撞体
                     m_CharacterController2D.Teleport(moveToPosition);
                 }
             }
@@ -591,6 +622,54 @@ namespace Gamekit2D
                 m_MoveVector.y -= jumpAbortSpeedReduction * Time.deltaTime;
             }
         }
+        #endregion
+
+        #region 攀爬楼梯
+
+        public void CheckForClimbing()
+        {
+            if (m_CurrentClimbable != null && PlayerInput.Instance.Vertical.Value > float.Epsilon)
+            {
+                m_Animator.SetBool(m_HashClimbingPara, true);
+                StartClimb();
+            }
+            else
+            {
+                m_Animator.SetBool(m_HashClimbingPara, false);
+                StopClimb();
+            }
+
+            //Debug.Log((m_CurrentClimbable != null).ToString() + " , " + (PlayerInput.Instance.Vertical.Value > float.Epsilon).ToString());
+        }
+
+        public void StartClimb()
+        {
+            m_CharacterController2D.transform.position = new Vector3(
+                m_CurrentClimbable.transform.position.x, 
+                m_CharacterController2D.transform.position.y,
+                m_CharacterController2D.transform.position.z
+                );
+        }
+
+        public void StopClimb()
+        {
+            m_Animator.speed = 1f;
+        }
+
+        public void LadderVerticalMovement()
+        {
+            float desiredSpeed = PlayerInput.Instance.Vertical.Value * /*maxSpeed*/1f;
+            float acceleration;
+
+            if (PlayerInput.Instance.Vertical.ReceivingInput)
+                acceleration = groundAcceleration * airborneAccelProportion;
+            else
+                acceleration = groundDeceleration * airborneDecelProportion;
+
+            m_MoveVector.y = Mathf.MoveTowards(m_MoveVector.y, desiredSpeed, acceleration * Time.deltaTime);
+            //m_Animator.speed = 1f * m_MoveVector.y / /*maxSpeed*/ 1f;
+        }
+
         #endregion
 
         #region 空中移动
@@ -829,8 +908,16 @@ namespace Gamekit2D
 
         public void TeleportToColliderBottom()
         {
-            Vector2 colliderBottom = m_CharacterController2D.Rigidbody2D.position + m_Capsule.offset + Vector2.down * m_Capsule.size.y * 0.5f;
-            m_CharacterController2D.Teleport(colliderBottom);
+            if (m_Capsule != null)
+            {
+                Vector2 colliderBottom = m_CharacterController2D.Rigidbody2D.position + m_Capsule.offset + Vector2.down * m_Capsule.size.y * 0.5f;
+                m_CharacterController2D.Teleport(colliderBottom);
+            }
+            else if (m_Box != null)
+            {
+                Vector2 colliderBottom = m_CharacterController2D.Rigidbody2D.position + m_Box.offset + Vector2.down * m_Box.size.y * 0.5f;
+                m_CharacterController2D.Teleport(colliderBottom);
+            }
         }
         #endregion
         public void PlayFootstep()
