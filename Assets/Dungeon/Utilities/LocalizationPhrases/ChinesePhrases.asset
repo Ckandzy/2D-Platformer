@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb98d8da5f4a244490d8e8d0cfef54a, type: 3}
+  m_Name: ChinesePhrases
+  m_EditorClassIdentifier: 
+  language: Chinese
+  phrases:
+  - key: GUIDE1
+    value: "\u7A7A\u683C\u952E\u8DF3\u8DC3"
+  - key: GUIDE2
+    value: "\u8FDE\u6309\u4E24\u6B21\u7A7A\u683C\u952E\u4E8C\u6BB5\u8DF3"
+  - key: GUIDE3
+    value: "K\u952E\u8FD1\u6218\u653B\u51FB"
+  - key: GUIDE4
+    value: "L\u952E\u8FDC\u7A0B\u653B\u51FB"
+  - key: GUIDE5
+    value: "S+\u7A7A\u683C\u53EF\u4EE5\u7A7F\u8D8A\u5E73\u53F0"
+  originalPhrases: {fileID: 11400000, guid: 981537393d31eec4184d1dc5efb52d4e, type: 2}

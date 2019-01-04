@@ -57,7 +57,7 @@ namespace Gamekit2D
         }
 
         /// <summary>
-        /// 计算承载的重质量
+        /// 计算承载的总质量
         /// </summary>
         public float CaughtObjectsMass
         {
@@ -112,7 +112,6 @@ namespace Gamekit2D
             CheckRigidbodyContacts (platformRigidbody);
 
             bool checkAgain;
-            //2018.7.22 Hotkang 具体作用已明确
             do
             {
                 for (int i = 0, count = m_CaughtObjects.Count; i < count; i++)

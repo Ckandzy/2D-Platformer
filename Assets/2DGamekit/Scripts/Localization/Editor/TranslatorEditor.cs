@@ -31,6 +31,23 @@ namespace Gamekit2D
 
             if (m_PhrasesProp.arraySize > 0 && AllOriginalPhrasesNonNull ())
             {
+                #region DrawDefaultInspector
+                // Loop through properties and create one field (including children) for each top level property.
+                SerializedProperty property = serializedObject.GetIterator();
+                bool expanded = true;
+                while (property.NextVisible(expanded))
+                {
+                    if ("m_Script" == property.propertyPath)
+                    {
+                        using (new EditorGUI.DisabledScope("m_Script" == property.propertyPath))
+                        {
+                            EditorGUILayout.PropertyField(property, true);
+                        }
+                    }
+                    expanded = false;
+                }
+                #endregion
+
                 m_LanguageIndexProp.intValue = EditorGUILayout.Popup("Language", m_LanguageIndexProp.intValue, m_AvailableLanguages);
 
                 OriginalPhrases selectedPhrases = m_Translator.phrases[m_LanguageIndexProp.intValue];
@@ -75,6 +92,9 @@ namespace Gamekit2D
             serializedObject.ApplyModifiedProperties ();
         }
 
+        /// <summary>
+        /// 从Inspector的序列化字段m_PhrasesProp读取OriginalPhrases对象，根据该对象设置Language下拉菜单
+        /// </summary>
         void SetupLanguages ()
         {
             m_AvailableLanguages = new string[m_PhrasesProp.arraySize];

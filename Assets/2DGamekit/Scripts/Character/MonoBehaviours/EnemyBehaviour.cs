@@ -14,8 +14,9 @@ namespace Gamekit2D
     }
     public enum SightType
     {
-        Rectangle = 0,
+        Rays = 0,
         Cone,
+        Rectangle,
     }
     [RequireComponent(typeof(CharacterController2D))]
     [RequireComponent(typeof(Collider2D))]
@@ -39,16 +40,21 @@ namespace Gamekit2D
 
         [Header("Scanning settings")]
         public SightType sightType = SightType.Cone;
+        [Header("SightType Rectangle")]
         [Tooltip("视野矩形偏移量")]
         public Vector2 offset = new Vector2(1.5f, 1f);
         [Tooltip("视野矩形大小")]
         public Vector2 size = new Vector2(2.5f, 1f);
+        [Header("SightType Cone")]
         [Tooltip("The angle of the forward of the view cone. 0 is forward of the sprite, 90 is up, 180 behind etc.")]
         [Range(0.0f,360.0f)]
         public float viewDirection = 0.0f;
         [Range(0.0f, 360.0f)]
         public float viewFov;
         public float viewDistance;
+        [Header("SightType Rays")]
+        public bool isDoubleSide;
+        public float rayDistance;
         [Tooltip("Time in seconds without the target in the view cone before the target is considered lost from sight")]
         public float timeBeforeTargetLost = 3.0f;
 
@@ -105,6 +111,7 @@ namespace Gamekit2D
         protected Color m_OriginalColor;
 
         protected BulletPool m_BulletPool;
+        protected BoxCollider2D boxCollider2D;
 
         protected bool m_Dead = false;
 
@@ -122,6 +129,7 @@ namespace Gamekit2D
             m_Collider = GetComponent<Collider2D>();
             m_Animator = GetComponent<Animator>();
             m_SpriteRenderer = GetComponent<SpriteRenderer>();
+            boxCollider2D = GetComponent<BoxCollider2D>();
 
             m_OriginalColor = m_SpriteRenderer.color;
 
@@ -254,18 +262,46 @@ namespace Gamekit2D
 
             Vector3 dir = PlayerCharacter.PlayerInstance.transform.position - transform.position;
 
-            if (dir.sqrMagnitude > viewDistance * viewDistance)
+            switch (sightType)
             {
-                return;
-            }
+                case SightType.Cone:
+                    {
+                        if (dir.sqrMagnitude > viewDistance * viewDistance)
+                        {
+                            return;
+                        }
 
-            Vector3 testForward = Quaternion.Euler(0, 0, spriteFaceLeft ? Mathf.Sign(m_SpriteForward.x) * -viewDirection : Mathf.Sign(m_SpriteForward.x) * viewDirection) * m_SpriteForward;
+                        Vector3 testForward = Quaternion.Euler(0, 0, spriteFaceLeft ? Mathf.Sign(m_SpriteForward.x) * -viewDirection : Mathf.Sign(m_SpriteForward.x) * viewDirection) * m_SpriteForward;
 
-            float angle = Vector3.Angle(testForward, dir);
+                        float angle = Vector3.Angle(testForward, dir);
 
-            if (angle > viewFov * 0.5f)
-            {
-                return;
+                        if (angle > viewFov * 0.5f)
+                        {
+                            return;
+                        }
+                    }
+                    break;
+                case SightType.Rectangle:
+                    {
+
+                    }
+                    break;
+                case SightType.Rays:
+                    {
+                        //if (Mathf.Abs(dir.x) > rayDistance)
+                        //{
+                        //    return;
+                        //}
+                        //Vector3[] point = new Vector3[3];
+                        //point[0] = boxCollider2D.bounds.center;
+                        //point[1] = new Vector3(boxCollider2D.bounds.center.x,
+                        //    boxCollider2D.bounds.center.y + boxCollider2D.bounds.extents.y,
+                        //    boxCollider2D.bounds.center.z);
+                        //point[2] = new Vector3(boxCollider2D.bounds.center.x,
+                        //    boxCollider2D.bounds.center.y - boxCollider2D.bounds.extents.y,
+                        //    boxCollider2D.bounds.center.z);
+                    }
+                    break;
             }
 
             m_Target = PlayerCharacter.PlayerInstance.transform;
@@ -295,21 +331,37 @@ namespace Gamekit2D
 
             Vector3 toTarget = m_Target.position - transform.position;
 
-            if (toTarget.sqrMagnitude < viewDistance * viewDistance)
+            switch (sightType)
             {
-                //注：假设viewDirection为0时, -viewDirection和viewDirection仍然有效, 在计算机有符号整数和浮点数中, +0和-0是两种不同的表示。
-                Vector3 testForward = Quaternion.Euler(0, 0, spriteFaceLeft ? -viewDirection : viewDirection) * m_SpriteForward;
-                if (m_SpriteRenderer.flipX) testForward.x = -testForward.x;
+                case SightType.Cone:
+                    {
+                        if (toTarget.sqrMagnitude < viewDistance * viewDistance)
+                        {
+                            //注：当viewDirection为0时, -viewDirection和viewDirection仍然有效, 在计算机有符号整数和浮点数中, +0和-0是两种不同的表示。
+                            Vector3 testForward = Quaternion.Euler(0, 0, spriteFaceLeft ? -viewDirection : viewDirection) * m_SpriteForward;
+                            if (m_SpriteRenderer.flipX) testForward.x = -testForward.x;
 
-                float angle = Vector3.Angle(testForward, toTarget);
+                            float angle = Vector3.Angle(testForward, toTarget);
 
-                if (angle <= viewFov * 0.5f)
-                {
-                    //we reset the timer if the target is at viewing distance.
-                    m_TimeSinceLastTargetView = timeBeforeTargetLost;
-                }    
+                            if (angle <= viewFov * 0.5f)
+                            {
+                                //we reset the timer if the target is at viewing distance.
+                                m_TimeSinceLastTargetView = timeBeforeTargetLost;
+                            }
+                        }
+                    }
+                    break;
+                case SightType.Rectangle:
+                    {
+
+                    }
+                    break;
+                case SightType.Rays:
+                    {
+
+                    }
+                    break;
             }
-
 
             if (m_TimeSinceLastTargetView <= 0.0f)
             {
@@ -495,7 +547,7 @@ namespace Gamekit2D
             dieAudio.PlayRandomSound();
 
             m_Dead = true;
-            Debug.Log(moveVector);
+            //Debug.Log(moveVector);
             //m_Collider.enabled = false;
             gameObject.layer = 20;
             CameraShaker.Shake(0.15f, 0.3f);
@@ -569,33 +621,58 @@ namespace Gamekit2D
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            //draw the cone of view
-            Vector3 forward = spriteFaceLeft ? Vector2.left : Vector2.right;
-            forward = Quaternion.Euler(0, 0, spriteFaceLeft ? -viewDirection : viewDirection) * forward;
+            switch (sightType)
+            {
+                case SightType.Cone:
+                    {
+                        //draw the cone of view
+                        Vector3 forward = spriteFaceLeft ? Vector2.left : Vector2.right;
+                        forward = Quaternion.Euler(0, 0, spriteFaceLeft ? -viewDirection : viewDirection) * forward;
 
-            if (GetComponent<SpriteRenderer>().flipX) forward.x = -forward.x;
+                        if (GetComponent<SpriteRenderer>().flipX) forward.x = -forward.x;
 
-            Vector3 endpoint = transform.position + (Quaternion.Euler(0, 0, viewFov * 0.5f) * forward);
+                        Vector3 endpoint = transform.position + (Quaternion.Euler(0, 0, viewFov * 0.5f) * forward);
 
-            Handles.color = new Color(0, 1.0f, 0, 0.2f);
-            Handles.DrawSolidArc(transform.position, -Vector3.forward, (endpoint - transform.position).normalized, viewFov, viewDistance);
-
+                        Handles.color = new Color(0, 1.0f, 0, 0.2f);
+                        Handles.DrawSolidArc(transform.position, -Vector3.forward, (endpoint - transform.position).normalized, viewFov, viewDistance);
+                    } break;
+                case SightType.Rectangle:
+                    {
+                        //Handles.color = new Color(0, 1.0f, 0, 0.2f);
+                        Handles.DrawSolidRectangleWithOutline(new Rect((Vector2)transform.position + offset, size), new Color(0, 1.0f, 0, 0.2f), new Color(0, 1.0f, 0, 0.2f));
+                    } break;
+                //case SightType.Rays:
+                //    {
+                //        Vector3[] point = new Vector3[3];
+                //        point[0] = boxCollider2D.bounds.center;
+                //        point[1] = new Vector3(boxCollider2D.bounds.center.x,
+                //            boxCollider2D.bounds.center.y + boxCollider2D.bounds.extents.y,
+                //            boxCollider2D.bounds.center.z);
+                //        point[2] = new Vector3(boxCollider2D.bounds.center.x,
+                //            boxCollider2D.bounds.center.y - boxCollider2D.bounds.extents.y,
+                //            boxCollider2D.bounds.center.z);
+                //        if (isDoubleSide)
+                //        {
+                //            for (int i = 0; i < point.Length; i++)
+                //            {
+                //                Handles.DrawLine(point[i], new Vector3(point[i].x + rayDistance, point[i].y, point[i].z));
+                //                Handles.DrawLine(point[i], new Vector3(point[i].x - rayDistance, point[i].y, point[i].z));
+                //            }
+                //        }
+                //        else
+                //        {
+                //            Vector3 forward = spriteFaceLeft ? Vector2.left : Vector2.right;
+                //            if (GetComponent<SpriteRenderer>().flipX) forward.x = -forward.x;
+                //            for (int i = 0; i < point.Length; i++)
+                //            {
+                //                Handles.DrawLine(point[i], new Vector3(point[i].x + rayDistance * forward.x, point[i].y, point[i].z));
+                //            }
+                //        }
+                //    } break;
+            }
             //Draw attack range
-            Handles.color = new Color(1.0f, 0,0, 0.1f);
+            Handles.color = new Color(1.0f, 0, 0, 0.1f);
             Handles.DrawSolidDisc(transform.position, Vector3.back, meleeRange);
-
-            //Bounds bounds = new Bounds();
-            //bounds.center = offset;
-            //bounds.size = size;
-            //Vector3[] verts = new Vector3[]
-            //{
-            //    new Vector3(bounds.min.x, bounds.min.y, 0),
-            //    new Vector3(bounds.min.x, bounds.max.y, 0),
-            //    new Vector3(bounds.max.x, bounds.max.y, 0),
-            //    new Vector3(bounds.max.x, bounds.min.y, 0)
-            //};
-            Handles.color = new Color(0, 0, 1f, 0.2f);
-            Handles.DrawSolidRectangleWithOutline(new Rect(offset, size), Color.blue, Color.black);
         }
 #endif
     }

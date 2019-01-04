@@ -26,8 +26,8 @@ namespace Gamekit2D
 
         static Translator CreateDefault ()
         {
-            Translator prefab = Resources.Load<Translator>("Translator");
-            Translator defaultInstance = Instantiate(prefab);
+            GameObject prefab = Resources.Load<GameObject>("Localizer");
+            Translator defaultInstance = Instantiate(prefab).GetComponent<Translator>();
             return defaultInstance;
         }
 

@@ -46,6 +46,7 @@ namespace Gamekit2D
                 SerializedProperty valueProp = elementProp.FindPropertyRelative ("value");
 
                 Rect propertyRect = EditorGUILayout.GetControlRect (GUILayout.Height (EditorGUIUtility.singleLineHeight * 2f));
+                //此处GUI.Box()作用不明确
                 GUI.Box (propertyRect, GUIContent.none);
                 propertyRect.height = EditorGUIUtility.singleLineHeight;
                 propertyRect.width *= 0.25f;

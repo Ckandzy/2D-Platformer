@@ -39,6 +39,8 @@ namespace Gamekit2D
         public float gravity = 50f;
         public float jumpSpeed = 20f;
         public float jumpAbortSpeedReduction = 100f;
+        public int maxJumpTimes = 2;
+        public int remainingJumpTimes;
 
         [Range(k_MinHurtJumpAngle, k_MaxHurtJumpAngle)]
         public float hurtJumpAngle = 45f;
@@ -94,9 +96,6 @@ namespace Gamekit2D
         /// 受伤跳跃正切值
         /// </summary>
         protected float m_TanHurtJumpAngle;
-        /// <summary>
-        /// 两次闪烁间隔时间
-        /// </summary>
         protected WaitForSeconds m_FlickeringWait;
         protected Coroutine m_FlickerCoroutine;
         /*protected*/public Transform m_CurrentBulletSpawnPoint;
@@ -104,9 +103,6 @@ namespace Gamekit2D
         /// 射击间隔时间
         /// </summary>
         protected float m_ShotSpawnGap;
-        /// <summary>
-        /// 射击间隔时间
-        /// </summary>
         protected WaitForSeconds m_ShotSpawnWait;
         protected Coroutine m_ShootingCoroutine;
         protected float m_NextShotTime;

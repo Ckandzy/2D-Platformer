@@ -10,10 +10,11 @@ namespace Gamekit2D
     public class NewSceneCreator : EditorWindow
     {
         protected string m_NewSceneName;
-
+        protected string[] options = new string[] { "Default", "Dungeon"};
+        protected int index = 0;
         protected readonly GUIContent m_NameContent = new GUIContent ("New Scene Name");
     
-        [MenuItem("Kit Tools/Create New Scene...", priority = 100)]
+        [MenuItem("Kit Tools/Create New Scene", priority = 100)]
         static void Init ()
         {
             NewSceneCreator window = GetWindow<NewSceneCreator> ();
@@ -22,8 +23,17 @@ namespace Gamekit2D
 
         void OnGUI ()
         {
-            m_NewSceneName = EditorGUILayout.TextField (m_NameContent, m_NewSceneName);
-        
+            index = EditorGUILayout.Popup(index, options);
+
+            Rect labelRect = EditorGUILayout.GetControlRect(GUILayout.Height(EditorGUIUtility.singleLineHeight));
+            labelRect.width *= 0.5f;
+
+            EditorGUI.LabelField(labelRect, m_NameContent);
+
+            labelRect.x += labelRect.width;
+
+            m_NewSceneName = EditorGUI.TextField (labelRect, m_NewSceneName);
+            
             if(GUILayout.Button ("Create"))
                 CheckAndCreateScene ();
         }
@@ -53,13 +63,24 @@ namespace Gamekit2D
                     return;
                 }
             }
-        
-            CreateScene ();
+
+            switch (index)
+            {
+                case 0:
+                    CreateScene("_TemplateScene");
+                    break;
+                case 1:
+                    CreateScene("_DungeonTemplateScene");
+                    break;
+                default:
+                    Debug.LogError("Unrecognized Option");
+                    break;
+            }
         }
 
-        protected void CreateScene ()
+        protected void CreateScene (string templateScene)
         {
-            string[] result = AssetDatabase.FindAssets("_TemplateScene");
+            string[] result = AssetDatabase.FindAssets(templateScene);
 
             if (result.Length > 0)
             {
@@ -74,7 +95,7 @@ namespace Gamekit2D
             {
                 //Debug.LogError("The template scene <b>_TemplateScene</b> couldn't be found ");
                 EditorUtility.DisplayDialog("Error",
-                    "The scene _TemplateScene was not found in Gamekit2D/Scenes folder. This scene is required by the New Scene Creator.",
+                    "The scene " + templateScene + " was not found in Gamekit2D/Scenes folder. This scene is required by the New Scene Creator.",
                     "OK");
             }
         }
