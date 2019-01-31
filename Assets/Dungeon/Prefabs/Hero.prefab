@@ -403,7 +403,7 @@ Transform:
   m_GameObject: {fileID: 1508094077166520}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 22.84, y: 4.005, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8075, y: 0.8173, z: 1}
   m_Children:
   - {fileID: 4818872068604126}
   - {fileID: 4680831383942398}
@@ -451,7 +451,7 @@ SpriteRenderer:
   m_SortingLayerID: 1212410841
   m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c9df48a9468f00e4aab8922848519296, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 39053e5704de0224da5dd287d2cee1d6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -516,8 +516,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundedLayerMask:
     serializedVersion: 2
-    m_Bits: 2147483648
-  groundedRaycastDistance: 0.1
+    m_Bits: 2684354560
+  groundedRaycastDistance: 0.05
 --- !u!114 &114597082419914958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,17 +579,19 @@ MonoBehaviour:
   meleeDamager: {fileID: 114461949939230272}
   facingLeftBulletSpawnPoint: {fileID: 4818872068604126}
   facingRightBulletSpawnPoint: {fileID: 4680831383942398}
-  bulletPool: {fileID: 0}
+  bulletPool: {fileID: 114112946654675510}
   cameraFollowTarget: {fileID: 4858307312634484}
-  maxSpeed: 8
+  maxSpeed: 5
   groundAcceleration: 80
   groundDeceleration: 80
   pushingSpeedProportion: 0.1
   airborneAccelProportion: 1
   airborneDecelProportion: 1
-  gravity: 38
-  jumpSpeed: 14
+  gravity: 25
+  jumpSpeed: 10
   jumpAbortSpeedReduction: 100
+  maxJumpTimes: 2
+  remainingJumpTimes: 0
   hurtJumpAngle: 45
   hurtJumpSpeed: 5
   flickeringDuration: 0.1
@@ -601,7 +603,7 @@ MonoBehaviour:
   meleeAttackAudioPlayer: {fileID: 114579901067530558}
   rangedAttackAudioPlayer: {fileID: 114595911995142314}
   shotsPerSecond: 1
-  bulletSpeed: 5
+  bulletSpeed: 20
   holdingGunTimeoutDuration: 10
   rightBulletSpawnPointAnimated: 1
   cameraHorizontalFacingOffset: 0
@@ -664,7 +666,18 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   OnDie:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114200456998744634}
+        m_MethodName: OnDie
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: Gamekit2D.Damageable+DamageEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   OnGainHealth:
@@ -682,12 +695,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508094077166520}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f228fbb363353454ca367fa9d85a2d98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 7550874673868175130, guid: 47c1a7f6313fd4d498c4193342e2cac9, type: 3}
   initialPoolCount: 10
 --- !u!114 &114461949939230272
 MonoBehaviour:
@@ -702,8 +715,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
-  offset: {x: 1.0809593, y: 0.52078056}
-  size: {x: 1.3744469, y: 1.0415611}
+  offset: {x: 0.48896545, y: 0.52078056}
+  size: {x: 1.526744, y: 1.0415611}
   offsetBasedOnSpriteFacing: 1
   spriteRenderer: {fileID: 212857055034767620}
   canHitTriggers: 0
@@ -736,7 +749,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.5286697}
+  m_Offset: {x: -0.03239976, y: 0.5624673}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.3}
@@ -747,7 +760,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.54999924, y: 1.0267818}
+  m_Size: {x: 0.80799925, y: 1.1249346}
   m_EdgeRadius: 0
 --- !u!1 &1546135925666326
 GameObject:
@@ -921,7 +934,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1570280237774418}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalPosition: {x: 0.75, y: 0.688, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4479127752026320}
@@ -951,7 +964,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1646417966738238}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.75, y: 0.688, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4479127752026320}

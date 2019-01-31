@@ -27,15 +27,15 @@ TagManager:
   - BossWeakPoint
   - Bullet
   - Corpse
+  - PickupTrigger
+  - PickupCollider
   - 
   - 
   - 
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - levelPlatform
   - PlayerDrop
   - Platform
   m_SortingLayers:

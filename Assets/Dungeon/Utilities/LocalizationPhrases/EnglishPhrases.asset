@@ -21,6 +21,6 @@ MonoBehaviour:
   - key: GUIDE3
     value: '[K] Melee attack'
   - key: GUIDE4
-    value: '[L] Range attack'
+    value: '[O] Range attack'
   - key: GUIDE5
     value: '[S] + [space] pass through the platform'

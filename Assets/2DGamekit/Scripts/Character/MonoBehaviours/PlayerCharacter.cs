@@ -132,6 +132,7 @@ namespace Gamekit2D
         protected readonly int m_HashHurtPara = Animator.StringToHash("Hurt");
         protected readonly int m_HashForcedRespawnPara = Animator.StringToHash("ForcedRespawn");
         protected readonly int m_HashMeleeAttackPara = Animator.StringToHash("MeleeAttack");
+        protected readonly int m_HashRangeAttackPara = Animator.StringToHash("RangeAttack");
         protected readonly int m_HashHoldingGunPara = Animator.StringToHash("HoldingGun");
         protected readonly int m_HashClimbingPara = Animator.StringToHash("Climbing");
 
@@ -755,6 +756,7 @@ namespace Gamekit2D
             damageable.DisableInvulnerability();
         }
 
+        #region 攻击
         public bool CheckForHoldingGun()
         {
             bool holdingGun = false;
@@ -782,18 +784,18 @@ namespace Gamekit2D
         {
             if (PlayerInput.Instance.RangedAttack.Held && m_Animator.GetBool(m_HashHoldingGunPara))
             {
-                //if (m_ShootingCoroutine == null)
-                //    m_ShootingCoroutine = StartCoroutine(Shoot());
-                if (InventoryController.Gun != null && m_ShootingCoroutine == null)
-                    m_ShootingCoroutine = StartCoroutine(InventoryController.Gun.Shoot());
+                if (m_ShootingCoroutine == null)
+                    m_ShootingCoroutine = StartCoroutine(Shoot());
+                //if (InventoryController.Gun != null && m_ShootingCoroutine == null)
+                //    m_ShootingCoroutine = StartCoroutine(InventoryController.Gun.Shoot());
             }
 
             if ((PlayerInput.Instance.RangedAttack.Up || !m_Animator.GetBool(m_HashHoldingGunPara)) && m_ShootingCoroutine != null)
             {
-                //StopCoroutine(m_ShootingCoroutine);
-                //m_ShootingCoroutine = null;
-                StopCoroutine(InventoryController.Gun.Shoot());
+                StopCoroutine(m_ShootingCoroutine);
                 m_ShootingCoroutine = null;
+                //StopCoroutine(InventoryController.Gun.Shoot());
+                //m_ShootingCoroutine = null;
             }
         }
 
@@ -801,6 +803,7 @@ namespace Gamekit2D
         {
             m_Animator.SetBool(m_HashHoldingGunPara, false);
         }
+        #endregion
 
         public void EnableInvulnerability()
         {
@@ -885,9 +888,19 @@ namespace Gamekit2D
             return PlayerInput.Instance.MeleeAttack.Down;
         }
 
+        public bool CheckForRangeAttackInput()
+        {
+            return PlayerInput.Instance.RangedAttack.Down;
+        }
+
         public void MeleeAttack()
         {
             m_Animator.SetTrigger(m_HashMeleeAttackPara);
+        }
+
+        public void RangeAttack()
+        {
+            m_Animator.SetTrigger(m_HashRangeAttackPara);
         }
 
         public void EnableMeleeAttack()

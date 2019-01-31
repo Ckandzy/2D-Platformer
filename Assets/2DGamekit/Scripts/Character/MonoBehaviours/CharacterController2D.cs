@@ -175,6 +175,7 @@ namespace Gamekit2D
                 int count = Physics2D.Raycast(m_RaycastPositions[i], raycastDirection, m_ContactFilter, m_HitBuffer, raycastDistance);
                 //射线可视化
                 //Debug.DrawRay(m_RaycastPositions[i], raycastDirection);
+                Debug.DrawLine(m_RaycastPositions[i], m_RaycastPositions[i] + raycastDistance * raycastDirection);
                 if (bottom)
                 {
                     m_FoundHits[i] = count > 0 ? m_HitBuffer[0] : new RaycastHit2D();
@@ -240,6 +241,7 @@ namespace Gamekit2D
                 {
                     IsGrounded = relativeVelocity.y <= 0f;
 
+                    //以下代码中的Debug部分暂未找到复现场景
                     if (m_Capsule != null)
                     {
                         if (m_GroundColliders[1] != null)
@@ -247,6 +249,11 @@ namespace Gamekit2D
                             float capsuleBottomHeight = m_Rigidbody2D.position.y + m_Capsule.offset.y - m_Capsule.size.y * 0.5f;
                             float middleHitHeight = m_FoundHits[1].point.y;
                             IsGrounded &= middleHitHeight < capsuleBottomHeight + groundedRaycastDistance;
+                            if (!(middleHitHeight < capsuleBottomHeight + groundedRaycastDistance)&& IsGrounded)
+                            {
+                                Debug.Log("WOW" + middleHitHeight + " > " + capsuleBottomHeight + "+" + groundedRaycastDistance);
+                                Debug.Log(m_FoundHits[1].collider.gameObject);
+                            }
                         }
                     }
                 }

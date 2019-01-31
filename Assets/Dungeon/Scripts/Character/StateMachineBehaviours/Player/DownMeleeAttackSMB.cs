@@ -19,10 +19,13 @@ namespace Gamekit2D
         {
             m_MonoBehaviour.UpdateFacing();
             m_MonoBehaviour.UpdateJump();
-            m_MonoBehaviour.AirborneHorizontalMovement();
-            m_MonoBehaviour.AirborneVerticalMovement();
             if (m_MonoBehaviour.CheckForGrounded())
                 m_MonoBehaviour.GroundedHorizontalMovement(false);
+            else
+            {
+                m_MonoBehaviour.AirborneHorizontalMovement();
+                m_MonoBehaviour.AirborneVerticalMovement();
+            }
             if (m_MonoBehaviour.remainingJumpTimes > 0)
             {
                 if (m_MonoBehaviour.CheckForJumpInput())
