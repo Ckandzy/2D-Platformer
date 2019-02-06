@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Shero
+  m_Controller: {fileID: 9100000, guid: 8527f93100a5a3c4ba6fc831687c5c0c, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 2bdd06cf7ff169f479e9f0176bc8aeae, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 635a50bdd37e0cb43bcafba67673f67d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fb3dffbbb287eae4c9799799251bab10, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 5f5548ac0611e1f4dbafa735e4645cca, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 459e3cc04046df249b94cbd323abf192, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8b880dd44def2c746924dadc1f017bad, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 1a407593776dca54c8835a54a28ebdc9, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b522b7b3b4fa4f44aa5ea778ba3ae14a, type: 2}

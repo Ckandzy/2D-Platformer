@@ -13,7 +13,13 @@ namespace Gamekit2D
         public float removalDelay;
         public DataSettings dataSettings;
 
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
         protected int m_TotalSpawnedEnemyCount;
+#if UNITY_EDITOR
+        [SerializeField]
+#endif
         protected int m_CurrentSpawnedEnemyCount;
         protected Coroutine m_SpawnTimerCoroutine;
         protected WaitForSeconds m_SpawnWait;
@@ -21,15 +27,7 @@ namespace Gamekit2D
         void OnEnable()
         {
             PersistentDataManager.RegisterPersister(this);
-        }
 
-        void OnDisable()
-        {
-            PersistentDataManager.UnregisterPersister(this);
-        }
-
-        void Start()
-        {
             for (int i = 0; i < initialPoolCount; i++)
             {
                 Enemy newEnemy = CreateNewPoolObject();
@@ -47,6 +45,33 @@ namespace Gamekit2D
             m_TotalSpawnedEnemyCount += concurrentEnemiesToBeSpawned;
             m_SpawnWait = new WaitForSeconds(spawnDelay);
         }
+
+        void OnDisable()
+        {
+            PersistentDataManager.UnregisterPersister(this);
+        }
+
+        void Start()
+        {
+            //for (int i = 0; i < initialPoolCount; i++)
+            //{
+            //    Enemy newEnemy = CreateNewPoolObject();
+            //    pool.Add(newEnemy);
+            //}
+
+            //int spawnCount = Mathf.Min(totalEnemiesToBeSpawned - m_TotalSpawnedEnemyCount, concurrentEnemiesToBeSpawned);
+
+            //for (int i = 0; i < spawnCount; i++)
+            //{
+            //    Pop(transform.position + transform.right * Random.Range(-spawnArea * 0.5f, spawnArea * 0.5f));
+            //}
+
+            //m_CurrentSpawnedEnemyCount = spawnCount;
+            //m_TotalSpawnedEnemyCount += concurrentEnemiesToBeSpawned;
+            //m_SpawnWait = new WaitForSeconds(spawnDelay);
+        }
+
+        
 
         public override void Push(Enemy poolObject)
         {
@@ -101,6 +126,12 @@ namespace Gamekit2D
         {
             Gizmos.DrawWireCube(transform.position, new Vector3(spawnArea, 0.4f, 0));
         }
+
+        public void ResetSpawner()
+        {
+            m_TotalSpawnedEnemyCount = 0;
+            m_CurrentSpawnedEnemyCount = 0;
+        }
     }
 }
 
@@ -109,14 +140,14 @@ public class Enemy : PoolObject<EnemySpawner, Enemy, Vector2>
 {
     public Damageable damageable;
     public EnemyBehaviour enemyBehaviour;
-
+    public Treadable treadable;
     protected WaitForSeconds m_RemoveWait;
 
     protected override void SetReferences()
     {
         damageable = instance.GetComponent<Damageable>();
         enemyBehaviour = instance.GetComponent<EnemyBehaviour>();
-
+        treadable = instance.GetComponentInChildren<Treadable>();
         damageable.OnDie.AddListener(ReturnToPoolEvent);
 
         m_RemoveWait = new WaitForSeconds(objectPool.removalDelay);
@@ -127,6 +158,8 @@ public class Enemy : PoolObject<EnemySpawner, Enemy, Vector2>
         enemyBehaviour.SetMoveVector(Vector2.zero);
         instance.transform.position = info;
         instance.SetActive(true);
+        ///恢复头部可踩碰撞体
+        treadable.gameObject.SetActive(true);
         damageable.SetHealth(damageable.startingHealth);
         damageable.DisableInvulnerability();
         enemyBehaviour.contactDamager.EnableDamage();

@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Dungeon/Scenes/Level 1.unity
     guid: 00e899b3b5651304fa04da35a5b55a88
   - enabled: 0
@@ -26,10 +26,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/2DGamekit/Scenes/Zone5.unity
     guid: 960b12f881940d84983273421bebc695
-  - enabled: 1
+  - enabled: 0
     path: Assets/2DGamekit/Scenes/UI/UIMenus.unity
     guid: 705f1f73151a73046842d4e4ec8f514d
-  - enabled: 1
+  - enabled: 0
     path: Assets/2DGamekit/Scenes/UI/Loading.unity
     guid: ebc4647ff02971c4ba1b207af066be4d
   - enabled: 0
@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/GameJam/Scenes/Level 1.unity
+    guid: 8b054dd77765dfa40a5b13a42b664e30
   m_configObjects: {}

@@ -175,6 +175,8 @@ MonoBehaviour:
   viewDirection: 0
   viewFov: 300
   viewDistance: 6
+  isDoubleSide: 0
+  rayDistance: 0
   timeBeforeTargetLost: 2
   meleeRange: 3
   meleeDamager: {fileID: 0}

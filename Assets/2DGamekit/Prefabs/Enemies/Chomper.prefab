@@ -1053,6 +1053,8 @@ MonoBehaviour:
   viewDirection: 0
   viewFov: 360
   viewDistance: 5
+  isDoubleSide: 0
+  rayDistance: 0
   timeBeforeTargetLost: 2
   meleeRange: 2
   meleeDamager: {fileID: 114303490521682168}

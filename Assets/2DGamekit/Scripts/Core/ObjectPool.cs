@@ -99,6 +99,18 @@ namespace Gamekit2D
             poolObject.inPool = true;
             poolObject.Sleep();
         }
+
+        public virtual void PushAll()
+        {
+            for (int i = 0; i < pool.Count; i++)
+            {
+                if (!pool[i].inPool)
+                {
+                    pool[i].inPool = true;
+                    pool[i].Sleep();
+                }
+            }
+        }
     }
 
     [Serializable]
